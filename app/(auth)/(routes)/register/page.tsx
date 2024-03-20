@@ -1,21 +1,16 @@
-// const RegisterPage = () => {
-//     return ( 
-//         <div>
-//             Register page!
-//         </div>
-//      );
-// }
- 
-// export default RegisterPage;
+'use client';
 
 import React, { useState, ChangeEvent, FormEvent } from 'react';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css'; // Import the styles for react-datepicker
+import './app.css';
 
 type FormData = {
   email: string;
   displayName: string;
   username: string;
   password: string;
-  dateOfBirth: string;
+  dateOfBirth: Date | null; // Change the type to Date
   agreeToEmails: boolean;
 };
 
@@ -25,16 +20,20 @@ const RegistrationForm: React.FC = () => {
     displayName: '',
     username: '',
     password: '',
-    dateOfBirth: '',
+    dateOfBirth: null,
     agreeToEmails: false,
   });
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type, checked } = e.target;
-    setFormData({
-      ...formData,
+  const handleChange = (e: ChangeEvent<HTMLInputElement> | Date) => {
+    const { name, value, type, checked } = e as ChangeEvent<HTMLInputElement>;
+    setFormData((prev) => ({
+      ...prev,
       [name]: type === 'checkbox' ? checked : value,
-    });
+    }));
+  };
+
+  const handleDateChange = (date: Date | null) => {
+    setFormData((prev) => ({ ...prev, dateOfBirth: date }));
   };
 
   const handleSubmit = (e: FormEvent) => {
@@ -43,75 +42,71 @@ const RegistrationForm: React.FC = () => {
   };
 
   return (
-    <div style={{ backgroundColor: '#5865F2', padding: '20px' }}>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="email"
-          name="email"
-          placeholder="Email"
-          value={formData.email}
-          onChange={handleChange}
-        />
-        <input
-          type="text"
-          name="displayName"
-          placeholder="Display Name"
-          value={formData.displayName}
-          onChange={handleChange}
-        />
-        <input
-          type="text"
-          name="username"
-          placeholder="Username"
-          value={formData.username}
-          onChange={handleChange}
-        />
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          value={formData.password}
-          onChange={handleChange}
-        />
-        <input
-          type="date"
-          name="dateOfBirth"
-          value={formData.dateOfBirth}
-          onChange={handleChange}
-        />
-        <label>
+    <div className="form-container">
+      <form onSubmit={handleSubmit} className="registration-form">
+        <h2 className="form-title">Sign Up</h2>
+        {['email', 'displayName', 'username', 'password'].map(
+          (field, index) => (
+            <input
+              key={index}
+              type={field === 'password' ? 'password' : 'text'}
+              name={field}
+              placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
+              value={formData[field]}
+              onChange={handleChange}
+              className="form-field"
+              autoComplete="off"
+            />
+          )
+        )}
+        <div className="form-field">
+          <label htmlFor="dateOfBirth">Date of Birth</label>
+          <br />
+          <DatePicker
+            id="dateOfBirth"
+            selected={formData.dateOfBirth}
+            onChange={handleDateChange}
+            dateFormat="dd/MM/yyyy"
+            className="form-date-picker"
+            placeholderText="Select Date"
+            showYearDropdown
+            scrollableYearDropdown
+            yearDropdownItemNumber={15}
+            autoComplete="off"
+          />
+        </div>
+        <div className="agreement-label">
           <input
             type="checkbox"
             name="agreeToEmails"
             checked={formData.agreeToEmails}
             onChange={handleChange}
+            className="agreement-checkbox"
           />
-          It`&apos;` okay to send me emails with Discord updates, tips, and
-          special offers. You can opt out at any time.
-        </label>
-        <button
-          type="submit"
-          style={{ backgroundColor: '#5865F2', color: 'white' }}
-        >
-          Continue
+          I agree to receive emails with updates, tips, and offers.
+        </div>
+        <button type="submit" className="form-button">
+          Register
         </button>
+        <p className="form-small-text">
+          By registering, you agree to the{' '}
+          <a href="/terms" className="link">
+            Terms of Service
+          </a>{' '}
+          and{' '}
+          <a href="/privacy" className="link">
+            Privacy Policy
+          </a>
+          .
+        </p>
+        <p className="form-small-text">
+          Already have an account?{' '}
+          <a href="/login" className="link">
+            Log in
+          </a>
+          .
+        </p>
       </form>
-      <small>
-        By registering, you agree to{' '}
-        <a href="/terms-of-service" style={{ color: 'white' }}>
-          Discord`&apos;` Terms of Service
-        </a>
-        and
-        <a href="/privacy-policy" style={{ color: 'white' }}>
-          Privacy Policy
-        </a>
-        .
-      </small>
-      <p>
-        <a href="/login" style={{ color: 'white' }}>
-          Already have an account?
-        </a>
-      </p>
     </div>
   );
 };

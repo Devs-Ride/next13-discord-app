@@ -1,0 +1,82 @@
+.form-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #5865F2;
+}
+
+.registration-form {
+  width: 100%;
+  max-width: 400px;
+  padding: 40px;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease;
+}
+
+.registration-form:hover {
+  transform: translateY(-5px);
+}
+
+.form-field {
+  width: calc(100% - 16px); /* Adjust width to account for padding */
+  margin-top: 20px;
+  padding: 10px;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  transition: border-color 0.3s ease;
+}
+
+.form-field:focus {
+  border-color: #5865F2;
+  outline: none;
+}
+
+.form-button {
+  width: 100%;
+  padding: 10px 0;
+  margin-top: 30px;
+  background-color: #5865F2;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.form-button:hover {
+  background-color: #4854c0;
+}
+
+.link {
+  color: #5865F2;
+  transition: color 0.3s ease;
+}
+
+.link:hover, .link:focus {
+  color: #3448c5;
+  text-decoration: underline;
+}
+
+.form-title {
+  text-align: center;
+  color: #333;
+}
+
+.agreement-label {
+  display: flex;
+  align-items: center;
+  margin-top: 20px;
+  cursor: pointer;
+}
+
+.agreement-checkbox {
+  margin-right: 10px;
+}
+
+.form-small-text {
+  text-align: center;
+  margin-top: 20px;
+}
