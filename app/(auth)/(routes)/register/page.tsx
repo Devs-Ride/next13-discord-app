@@ -1,89 +1,140 @@
 'use client';
-
-import React, { useState, ChangeEvent, FormEvent } from 'react';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css'; // Import the styles for react-datepicker
+import React, { useState } from 'react';
 import './app.css';
 
-type FormData = {
-  email: string;
-  displayName: string;
-  username: string;
-  password: string;
-  dateOfBirth: Date | null; // Change the type to Date
-  agreeToEmails: boolean;
-};
-
-const RegistrationForm: React.FC = () => {
-  const [formData, setFormData] = useState<FormData>({
+const RegistrationForm = () => {
+  const [formData, setFormData] = useState({
     email: '',
     displayName: '',
     username: '',
     password: '',
-    dateOfBirth: null,
+    dateOfBirth: '',
     agreeToEmails: false,
   });
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement> | Date) => {
-    const { name, value, type, checked } = e as ChangeEvent<HTMLInputElement>;
+  const [errors, setErrors] = useState({});
+
+  const validateForm = () => {
+    let tempErrors = {};
+    tempErrors.email = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)
+      ? ''
+      : 'Invalid';
+    tempErrors.displayName = formData.displayName ? '' : 'Required';
+    tempErrors.username = formData.username ? '' : 'Required';
+    tempErrors.password = formData.password.length >= 6 ? '' : 'Required';
+    tempErrors.dateOfBirth = formData.dateOfBirth ? '' : 'Required';
+
+    setErrors(tempErrors);
+    return Object.values(tempErrors).every((x) => x === '');
+  };
+
+  const handleChange = (event) => {
+    const { name, value, type, checked } = event.target;
     setFormData((prev) => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : value,
     }));
   };
 
-  const handleDateChange = (date: Date | null) => {
-    setFormData((prev) => ({ ...prev, dateOfBirth: date }));
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    if (validateForm()) {
+      console.log(formData);
+      // Reset the form
+      setFormData({
+        email: '',
+        displayName: '',
+        username: '',
+        password: '',
+        dateOfBirth: '',
+        agreeToEmails: false,
+      });
+    }
   };
 
-  const handleSubmit = (e: FormEvent) => {
-    e.preventDefault();
-    console.log(formData);
+  // Error class
+  const determineErrorClass = (fieldName) => {
+    return errors[fieldName] ? 'input-error' : '';
   };
 
   return (
     <div className="form-container">
       <form onSubmit={handleSubmit} className="registration-form">
         <h2 className="form-title">Sign Up</h2>
-        {['email', 'displayName', 'username', 'password'].map(
-          (field, index) => (
-            <input
-              key={index}
-              type={field === 'password' ? 'password' : 'text'}
-              name={field}
-              placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
-              value={formData[field]}
-              onChange={handleChange}
-              className="form-field"
-              autoComplete="off"
-            />
-          )
-        )}
-        <div className="form-field">
-          <label htmlFor="dateOfBirth">Date of Birth</label>
-          <br />
-          <DatePicker
-            id="dateOfBirth"
-            selected={formData.dateOfBirth}
-            onChange={handleDateChange}
-            dateFormat="dd/MM/yyyy"
-            className="form-date-picker"
-            placeholderText="Select Date"
-            showYearDropdown
-            scrollableYearDropdown
-            yearDropdownItemNumber={15}
+        {/* Email Field */}
+        <div className="input-group">
+          <input
+            type="text"
+            name="email"
+            placeholder={`Email ${errors.email ? '*' : ''}`}
+            value={formData.email}
+            onChange={handleChange}
+            className={`form-field ${determineErrorClass('email')}`}
             autoComplete="off"
           />
         </div>
+        {/* Display Name Field */}
+        <div className="input-group">
+          <input
+            type="text"
+            name="displayName"
+            placeholder={`Display Name ${errors.displayName ? '*' : ''}`}
+            value={formData.displayName}
+            onChange={handleChange}
+            className={`form-field ${determineErrorClass('displayName')}`}
+            autoComplete="off"
+          />
+        </div>
+        {/* Username Field */}
+        <div className="input-group">
+          <input
+            type="text"
+            name="username"
+            placeholder={`Username ${errors.username ? '*' : ''}`}
+            value={formData.username}
+            onChange={handleChange}
+            className={`form-field ${determineErrorClass('username')}`}
+            autoComplete="off"
+          />
+        </div>
+        {/* Password Field */}
+        <div className="input-group">
+          <input
+            type="password"
+            name="password"
+            placeholder={`Password ${errors.password ? '*' : ''}`}
+            value={formData.password}
+            onChange={handleChange}
+            className={`form-field ${determineErrorClass('password')}`}
+            autoComplete="off"
+          />
+        </div>
+        {/* Date of Birth Field */}
+        <div className="input-group">
+          <label htmlFor="dateOfBirth" className="form-label">
+            Date of Birth
+          </label>
+          <input
+            type="date"
+            name="dateOfBirth"
+            value={formData.dateOfBirth}
+            onChange={handleChange}
+            className={`form-field ${determineErrorClass('dateOfBirth')}`}
+          />
+        </div>
+        {/* Agreement Checkbox */}
         <div className="agreement-label">
           <input
             type="checkbox"
+            id="agreeToEmails"
             name="agreeToEmails"
             checked={formData.agreeToEmails}
             onChange={handleChange}
             className="agreement-checkbox"
           />
-          I agree to receive emails with updates, tips, and offers.
+          <label htmlFor="agreeToEmails">
+            I agree to receive emails with updates, tips, and offers.
+          </label>
         </div>
         <button type="submit" className="form-button">
           Register
